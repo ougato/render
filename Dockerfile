@@ -1,10 +1,17 @@
-#使用Ubuntu 22.04 作为基础镜像FROMubuntu: 22.84
-#安装Shellinabox
-RUN apt-get update && \
-apt-get install -y shellinabox && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* / var/tmp/*
-#设置root 用户的密码为‘root'
-RUN echo 'root:frepai' | chpasswd
-#暴露22端口
+# 使用 CentOS 7 作为基础镜像
+FROM centos:7
+
+# 设置时区为Asia/Shanghai
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+# 清理YUM缓存并安装常用工具
+RUN yum -y update && yum -y install vim wget curl && yum clean all
+
+# 设置默认工作目录
+WORKDIR /root
+
+# 暴露 SSH 端口
 EXPOSE 22
-#启动Shellinabox
-CMD["/usr/bin/shellinaboxd"","-t","-s", "/:LOGIN"]
+
+# 启动 SSH 服务
+CMD ["/usr/sbin/sshd", "-D"]
